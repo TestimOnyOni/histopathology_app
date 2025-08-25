@@ -6,7 +6,7 @@ ASSETS_DIR = BASE_DIR / "assets"
 MODELS_DIR = ASSETS_DIR / "models"
 
 # Default model + threshold file names (override in Streamlit sidebar if needed)
-DEFAULT_MODEL_PATH = MODELS_DIR / "deploy_resnet50_slide.pth"
+DEFAULT_MODEL_PATH = MODELS_DIR / "best_resnet50_balanced.pth"
 DEFAULT_THRESHOLD_PATH = MODELS_DIR / "deploy_resnet50_slide_threshold.json"
 
 # Inference defaults
