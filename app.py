@@ -1,8 +1,16 @@
+import sys
+import os
+
+# Ensure backend/ is on sys.path no matter where Streamlit runs from
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+if APP_ROOT not in sys.path:
+    sys.path.insert(0, APP_ROOT)
+
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 
-import sys, os
+# import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from backend.config import (
     DEFAULT_MODEL_PATH, DEFAULT_THRESHOLD_PATH,
