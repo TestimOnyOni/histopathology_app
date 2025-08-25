@@ -12,11 +12,17 @@ import matplotlib.pyplot as plt
 
 # import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# from backend.config import (
+#     DEFAULT_MODEL_PATH, DEFAULT_THRESHOLD_PATH,
+#     DEFAULT_NUM_CLASSES, DEFAULT_AGG_METHOD, DEFAULT_PERCENTILE,
+#     DEFAULT_THRESHOLD
+# )
+
 from backend.config import (
-    DEFAULT_MODEL_PATH, DEFAULT_THRESHOLD_PATH,
-    DEFAULT_NUM_CLASSES, DEFAULT_AGG_METHOD, DEFAULT_PERCENTILE,
-    DEFAULT_THRESHOLD
+    MODEL_PATH, THR_PATH, DEFAULT_NUM_CLASSES, get_device
 )
+
+
 from backend.model_loader import load_model_and_threshold, get_device
 from backend.preprocessing import (
     preprocess_single_image, load_image_from_bytes, preprocess_zip_to_tensor_list
