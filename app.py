@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from backend.config import(
+from backend.config import (
     DEFAULT_MODEL_PATH, DEFAULT_THRESHOLD_PATH,
     DEFAULT_NUM_CLASSES, DEFAULT_AGG_METHOD, DEFAULT_PERCENTILE,
     DEFAULT_THRESHOLD
@@ -130,3 +130,9 @@ else:
     ax.set_xticklabels(["Malignant prob"])
     ax.set_ylabel("Probability")
     st.pyplot(fig, use_container_width=True)
+
+    # Debugger
+from backend.config import MODEL_PATH, THR_PATH
+
+st.write("MODEL PATH:", MODEL_PATH, "Exists?", MODEL_PATH.exists())
+st.write("THR PATH:", THR_PATH, "Exists?", THR_PATH.exists())
