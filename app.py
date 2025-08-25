@@ -12,15 +12,27 @@ import matplotlib.pyplot as plt
 
 # import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from backend.config import (
-    DEFAULT_MODEL_PATH, DEFAULT_THRESHOLD_PATH,
-    DEFAULT_NUM_CLASSES, DEFAULT_AGG_METHOD, DEFAULT_PERCENTILE,
-    DEFAULT_THRESHOLD
-)
+# from backend.config import (
+#     DEFAULT_MODEL_PATH, DEFAULT_THRESHOLD_PATH,
+#     DEFAULT_NUM_CLASSES, DEFAULT_AGG_METHOD, DEFAULT_PERCENTILE,
+#     DEFAULT_THRESHOLD
+# )
 
-from backend.config import (
-    MODEL_PATH, THR_PATH, DEFAULT_NUM_CLASSES, get_device
-)
+# from backend.config import (
+#     MODEL_PATH, THR_PATH, DEFAULT_NUM_CLASSES, get_device
+# )
+
+import importlib.util
+
+spec = importlib.util.spec_from_file_location("backend.config", os.path.join(APP_ROOT, "backend", "config.py"))
+config = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(config)
+
+MODEL_PATH = config.MODEL_PATH
+THR_PATH = config.THR_PATH
+DEFAULT_NUM_CLASSES = config.DEFAULT_NUM_CLASSES
+get_device = config.get_device
+
 
 
 from backend.model_loader import load_model_and_threshold, get_device
