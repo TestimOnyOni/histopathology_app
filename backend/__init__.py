@@ -1,2 +1,2 @@
-# Must exist
+# __init__.py Must exist
 # Though may be empty
