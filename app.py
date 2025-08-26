@@ -32,7 +32,6 @@ def _load_model_cached(model_path, thr_path):
         url=MODEL_URL  # 👈 provide fallback
     )
 
-
 # Load model once at startup
 model, device, best_thr = _load_model_cached(MODEL_PATH, THR_PATH, url=MODEL_URL)
 

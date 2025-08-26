@@ -18,13 +18,6 @@ def download_file(url: str, dest: Path, chunk_size: int = 8192):
                 if chunk:
                     f.write(chunk)
 
-# def load_model_and_threshold(model_path: Path, thr_path: Path,
-#                              num_classes: int = 2,
-#                              map_location=None,
-#                              url: str = None):
-#     # If model file missing, optionally download
-#     if not model_path.exists() and url:
-#         download_file(url, model_path)
 
 def load_model_and_threshold(model_path: Path, thr_path: Path,
                              num_classes: int = 2,
