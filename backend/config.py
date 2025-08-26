@@ -1,16 +1,15 @@
-import os
-import torch
+from pathlib import Path
 
-# Automatically detect root directory (repo root where app.py lives)
-APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Paths
+BASE_DIR = Path(__file__).resolve().parent.parent
+MODEL_DIR = BASE_DIR / "models"
 
-# Paths to model + threshold JSON
-MODEL_PATH = os.path.join(APP_ROOT, "best_resnet50_balanced.pth")
-THR_PATH = os.path.join(APP_ROOT, "deploy_resnet50_slide_threshold.json")
+# Model files
+MODEL_PATH = MODEL_DIR / "best_resnet50_balanced.pth"
+THR_PATH = MODEL_DIR / "deploy_resnet50_slide_threshold.json"
 
-# Model constants
-DEFAULT_NUM_CLASSES = 2  # Benign vs Malignant
+# Model download URL (use raw GitHub link, not blob!)
+MODEL_URL = "https://raw.githubusercontent.com/TestimOnyOni/histopathology_app/main/models/best_resnet50_balanced.pth"
 
-# Device getter
-def get_device():
-    return "cuda" if torch.cuda.is_available() else "cpu"
+# Inference settings
+DEFAULT_NUM_CLASSES = 2
