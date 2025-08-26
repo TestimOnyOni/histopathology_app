@@ -50,21 +50,21 @@ def safe_extract(zip_ref, path):
     zip_ref.extractall(path)
 
 
-def load_single_image(uploaded_file):
-    """
-    Load a single image from an uploaded file (Streamlit UploadedFile or file-like).
-    Supports .read(), .getbuffer(), or direct BytesIO objects.
-    """
-    try:
-        if hasattr(uploaded_file, "read"):  
-            # Streamlit UploadedFile or file-like object
-            img = Image.open(io.BytesIO(uploaded_file.read()))
-        elif hasattr(uploaded_file, "getbuffer"):
-            # Some mocks or special upload objects
-            img = Image.open(io.BytesIO(uploaded_file.getbuffer()))
-        else:
-            raise ValueError("Unsupported uploaded file type")
+# def load_single_image(uploaded_file):
+#     """
+#     Load a single image from an uploaded file (Streamlit UploadedFile or file-like).
+#     Supports .read(), .getbuffer(), or direct BytesIO objects.
+#     """
+#     try:
+#         if hasattr(uploaded_file, "read"):  
+#             # Streamlit UploadedFile or file-like object
+#             img = Image.open(io.BytesIO(uploaded_file.read()))
+#         elif hasattr(uploaded_file, "getbuffer"):
+#             # Some mocks or special upload objects
+#             img = Image.open(io.BytesIO(uploaded_file.getbuffer()))
+#         else:
+#             raise ValueError("Unsupported uploaded file type")
 
-        return img.convert("RGB")  # normalize mode
-    except Exception as e:
-        raise RuntimeError(f"Failed to load image: {e}")
+#         return img.convert("RGB")  # normalize mode
+#     except Exception as e:
+#         raise RuntimeError(f"Failed to load image: {e}")
