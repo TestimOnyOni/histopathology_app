@@ -24,6 +24,29 @@ def test_single_image():
     assert len(patches) == 1
     assert isinstance(patches[0], Image.Image)
 
+
+
+# def test_single_image(uploaded_file):
+#     """
+#     Load a single image from an uploaded file (Streamlit UploadedFile or file-like).
+#     Supports .read(), .getbuffer(), or direct BytesIO objects.
+#     """
+#     try:
+#         if hasattr(uploaded_file, "read"):  
+#             # Streamlit UploadedFile or file-like object
+#             img = Image.open(io.BytesIO(uploaded_file.read()))
+#         elif hasattr(uploaded_file, "getbuffer"):
+#             # Some mocks or special upload objects
+#             img = Image.open(io.BytesIO(uploaded_file.getbuffer()))
+#         else:
+#             raise ValueError("Unsupported uploaded file type")
+
+#         return img.convert("RGB")  # normalize mode
+#     except Exception as e:
+#         raise RuntimeError(f"Failed to load image: {e}")
+
+
+
 def test_zip_images():
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as z:
