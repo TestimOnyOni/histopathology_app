@@ -17,30 +17,22 @@ from backend.preprocessing import handle_uploaded_file
 from backend.inference import run_inference_on_patches
 from backend.model_loader import load_model_and_threshold, get_device
 from backend.config import MODEL_PATH, THR_PATH, DEFAULT_NUM_CLASSES, MODEL_URL
+
 # from backend.utils import get_device
 # -------------------------------------------------------------------
 # Cache model + threshold loading
 # -------------------------------------------------------------------
-# @st.cache_resource
-# def _load_model_cached(model_path, thr_path):
-#     return load_model_and_threshold(
-#         model_path=model_path,
-#         threshold_path=thr_path,
-#         num_classes=DEFAULT_NUM_CLASSES,
-#         map_location=get_device(),
-#     )
 @st.cache_resource
-def _load_model_cached(model_path, thr_path, url=None):
+def _load_model_cached(model_path, thr_path):
     return load_model_and_threshold(
         model_path=model_path,
         thr_path=thr_path,
-        num_classes=DEFAULT_NUM_CLASSES,
+        num_classes=2,
         map_location=get_device(),
-        url=url,  # NEW: pass download URL
+        url=MODEL_URL  # 👈 provide fallback
     )
 
-# --- App startup ---
-# model, device, best_thr = _load_model_cached(MODEL_PATH, THR_PATH, url="https://github.com/TestimOnyOni/histopathology_app/blob/main/models/best_resnet50_balanced.pth")
+
 # Load model once at startup
 model, device, best_thr = _load_model_cached(MODEL_PATH, THR_PATH, url=MODEL_URL)
 
