@@ -1,70 +1,81 @@
-import os
-import zipfile
-import tempfile
-from PIL import Image
-import streamlit as st
+# backend/preprocessing.py
+
 import io
+import zipfile
+from pathlib import Path
+from typing import List, Union
 
-def handle_uploaded_file(uploaded_file):
+from PIL import Image
+
+
+def safe_extract(zip_ref: zipfile.ZipFile, path: Union[str, Path]) -> None:
     """
-    Handle uploaded image or ZIP file.
-    Returns list of PIL.Image objects.
+    Safely extract a ZIP file into the target path.
+    Prevents path traversal vulnerabilities.
     """
-    patches = []
-
-    if uploaded_file.name.lower().endswith((".png", ".jpg", ".jpeg")):
-        # Single image
-        image = Image.open(uploaded_file).convert("RGB")
-        patches.append(image)
-
-    elif uploaded_file.name.lower().endswith(".zip"):
-        # Extract ZIP
-        with tempfile.TemporaryDirectory() as tmpdir:
-            zip_path = os.path.join(tmpdir, uploaded_file.name)
-            with open(zip_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-
-            with zipfile.ZipFile(zip_path, "r") as zip_ref:
-                safe_extract(zip_ref, tmpdir)
-
-            # Collect image files
-            for root, _, files in os.walk(tmpdir):
-                for fname in files:
-                    if fname.lower().endswith((".png", ".jpg", ".jpeg")):
-                        try:
-                            img_path = os.path.join(root, fname)
-                            img = Image.open(img_path).convert("RGB")
-                            patches.append(img)
-                        except Exception as e:
-                            st.warning(f"⚠️ Could not load {fname}: {e}")
-    return patches
-
-def safe_extract(zip_ref, path):
-    """
-    Safe extraction to prevent path traversal attacks.
-    """
-    for member in zip_ref.namelist():
-        member_path = os.path.abspath(os.path.join(path, member))
-        if not member_path.startswith(os.path.abspath(path)):
-            raise Exception("Unsafe path detected in ZIP!")
+    path = Path(path)
+    for member in zip_ref.infolist():
+        member_path = path / member.filename
+        if not str(member_path.resolve()).startswith(str(path.resolve())):
+            raise Exception("Unsafe path detected in zip file!")
     zip_ref.extractall(path)
 
 
-# def load_single_image(uploaded_file):
-#     """
-#     Load a single image from an uploaded file (Streamlit UploadedFile or file-like).
-#     Supports .read(), .getbuffer(), or direct BytesIO objects.
-#     """
-#     try:
-#         if hasattr(uploaded_file, "read"):  
-#             # Streamlit UploadedFile or file-like object
-#             img = Image.open(io.BytesIO(uploaded_file.read()))
-#         elif hasattr(uploaded_file, "getbuffer"):
-#             # Some mocks or special upload objects
-#             img = Image.open(io.BytesIO(uploaded_file.getbuffer()))
-#         else:
-#             raise ValueError("Unsupported uploaded file type")
+def _to_filelike(uploaded_file) -> io.BytesIO:
+    """
+    Normalize uploaded_file into a file-like object (BytesIO).
+    Works for Streamlit UploadedFile, bytes, or dummy test classes.
+    """
+    if hasattr(uploaded_file, "read"):  # Streamlit UploadedFile or real file
+        data = uploaded_file.read()
+        return io.BytesIO(data)
+    elif isinstance(uploaded_file, (bytes, bytearray)):
+        return io.BytesIO(uploaded_file)
+    else:
+        raise TypeError(f"Unsupported uploaded_file type: {type(uploaded_file)}")
 
-#         return img.convert("RGB")  # normalize mode
-#     except Exception as e:
-#         raise RuntimeError(f"Failed to load image: {e}")
+
+def handle_uploaded_file(uploaded_file, extract_dir: Union[str, Path] = "uploaded_data") -> List[Image.Image]:
+    """
+    Handle an uploaded file (single image or ZIP of images).
+
+    Args:
+        uploaded_file: file-like object (Streamlit UploadedFile, bytes, or dummy).
+        extract_dir: folder where ZIP contents will be extracted.
+
+    Returns:
+        List of PIL.Image objects.
+    """
+    filename = getattr(uploaded_file, "name", "uploaded_file")
+
+    # Convert to BytesIO to ensure .read() and .seek() exist
+    file_like = _to_filelike(uploaded_file)
+
+    # Case 1: ZIP archive
+    if filename.lower().endswith(".zip"):
+        images = []
+        extract_dir = Path(extract_dir)
+        extract_dir.mkdir(parents=True, exist_ok=True)
+
+        with zipfile.ZipFile(file_like) as zip_ref:
+            safe_extract(zip_ref, extract_dir)
+
+            for f in zip_ref.namelist():
+                if f.lower().endswith((".png", ".jpg", ".jpeg")):
+                    try:
+                        img_path = extract_dir / f
+                        img = Image.open(img_path).convert("RGB")
+                        images.append(img)
+                    except Exception as e:
+                        print(f"⚠️ Could not open {f}: {e}")
+
+        return images
+
+    # Case 2: Single image
+    else:
+        try:
+            img = Image.open(file_like).convert("RGB")
+            return [img]
+        except Exception as e:
+            print(f"⚠️ Could not load image: {e}")
+            return []
