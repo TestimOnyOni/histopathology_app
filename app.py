@@ -33,7 +33,7 @@ def _load_model_cached(model_path, thr_path):
     )
 
 # Load model once at startup
-model, device, best_thr = _load_model_cached(MODEL_PATH, THR_PATH, url=MODEL_URL)
+model, best_thr, device = _load_model_cached(MODEL_PATH, THR_PATH, url=MODEL_URL)
 
 # -------------------------------------------------------------------
 # Streamlit UI
