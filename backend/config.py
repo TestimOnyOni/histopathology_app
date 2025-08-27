@@ -1,5 +1,5 @@
 from pathlib import Path
-import touch
+import torch
 
 # Paths inside the container
 BASE_DIR = Path(__file__).resolve().parent.parent
