@@ -4,6 +4,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_PATH = BASE_DIR / "models" / "best_resnet50_balanced.pth"
 THR_PATH = BASE_DIR / "models" / "thr.json"
+DEFAULT_NUM_CLASSES = 2
 
 # Remote fallback (raw GitHub link!)
 MODEL_URL = "https://raw.githubusercontent.com/TestimOnyOni/histopathology_app/main/models/best_resnet50_balanced.pth"
