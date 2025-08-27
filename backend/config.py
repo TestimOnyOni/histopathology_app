@@ -1,4 +1,5 @@
 from pathlib import Path
+import touch
 
 # Paths inside the container
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,3 +11,6 @@ DEFAULT_NUM_CLASSES = 2
 MODEL_URL = "https://raw.githubusercontent.com/TestimOnyOni/histopathology_app/main/models/best_resnet50_balanced.pth"
 # https://github.com/TestimOnyOni/histoPathologySystem/blob/main/best_resnet50_balanced.pth
 # MODEL_URL = "https://raw.githubusercontent.com/TestimOnyOni/histoPathologySystem/blob/main/best_resnet50_balanced.pth"
+
+def get_device():
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
