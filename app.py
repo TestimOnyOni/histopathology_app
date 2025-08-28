@@ -23,7 +23,7 @@ from backend.model_loader import load_model_and_threshold, get_device
 # Cache model + threshold loading
 # -------------------------------------------------------------------
 @st.cache_resource
-def _load_model_cached(model_path, thr_path=None):
+def _load_model_cached(model_path, thr_path, url=None):
     return load_model_and_threshold(
         model_path=model_path,
         thr_path=thr_path,
