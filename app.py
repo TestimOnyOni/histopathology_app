@@ -15,8 +15,7 @@ from backend.config import MODEL_PATH, THR_PATH, MODEL_URL, DEFAULT_NUM_CLASSES
 from backend.model_loader import load_model_and_threshold
 from backend.preprocessing import handle_uploaded_file
 from backend.inference import run_inference_on_patches
-from backend.model_loader import load_model_and_threshold, get_device
-# from backend.config import MODEL_PATH, THR_PATH, DEFAULT_NUM_CLASSES, MODEL_URL
+from backend.model_loader import load_model_and_threshold, _get_device
 
 # from backend.utils import get_device
 # -------------------------------------------------------------------
