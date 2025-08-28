@@ -32,17 +32,6 @@ def _load_model_cached(model_path, thr_path, url=None):
         url=MODEL_URL  # 👈 provide fallback
     )
 
-# @st.cache_resource
-# def _load_model_cached(model_path, thr_path, url=None):
-#     return load_model_and_threshold(
-#         model_path=model_path,
-#         thr_path=thr_path,
-#         num_classes=2,
-#         map_location=get_device(),
-#         url=url
-#     )
-
-
 # Load model once at startup
 model, device, best_thr = _load_model_cached(MODEL_PATH, THR_PATH, url=MODEL_URL)
 
@@ -69,8 +58,7 @@ if uploaded_file is not None:
         # Run inference
         st.info("Running inference on all patches... Please wait ⏳")
         slide_pred, agg_prob, patch_probs = run_inference_on_patches(
-            model, device, patches, threshold=best_thr
-        )
+            model, device, patches, threshold=best_thr)
 
         # --- Slide-level result ---
         st.subheader("📊 Slide-level Result")
