@@ -23,7 +23,7 @@ from backend.model_loader import load_model_and_threshold, get_device
 # Cache model + threshold loading
 # -------------------------------------------------------------------
 @st.cache_resource
-def _load_model_cached(model_path, thr_path):
+def _load_model_cached(model_path, thr_path=None):
     return load_model_and_threshold(
         model_path=model_path,
         thr_path=thr_path,
@@ -32,8 +32,19 @@ def _load_model_cached(model_path, thr_path):
         url=MODEL_URL  # 👈 provide fallback
     )
 
+# @st.cache_resource
+# def _load_model_cached(model_path, thr_path, url=None):
+#     return load_model_and_threshold(
+#         model_path=model_path,
+#         thr_path=thr_path,
+#         num_classes=2,
+#         map_location=get_device(),
+#         url=url
+#     )
+
+
 # Load model once at startup
-model, best_thr, device = _load_model_cached(MODEL_PATH, THR_PATH, url=MODEL_URL)
+model, device, best_thr = _load_model_cached(MODEL_PATH, THR_PATH, url=MODEL_URL)
 
 # -------------------------------------------------------------------
 # Streamlit UI
