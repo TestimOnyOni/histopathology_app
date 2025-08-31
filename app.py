@@ -2,7 +2,7 @@ import sys
 import os
 import streamlit as st
 import matplotlib.pyplot as plt
-from backend.model_loader import load_model, get_device
+from backend.model_loader import load_model_and_threshold, _get_device
 
 # -------------------------------------------------------------------
 # Bootstrap sys.path so "backend" is always importable
@@ -28,7 +28,7 @@ def _load_model_cached(model_path, thr_path, url=None):
         model_path=model_path,
         thr_path=thr_path,
         num_classes=2,
-        map_location=get_device(),
+        map_location=_get_device(),
         url=MODEL_URL  # 👈 provide fallback
     )
 

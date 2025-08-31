@@ -1,9 +1,7 @@
 from __future__ import annotations
-
 import json
 from pathlib import Path
 from typing import Tuple, Dict, Any
-
 import torch
 import torch.nn as nn
 import torchvision.models as models

@@ -1,10 +1,7 @@
 # backend/inference.py
 from __future__ import annotations
-
 from typing import List, Tuple
-
 import torch
-
 
 def run_inference_on_patches(
     model,
