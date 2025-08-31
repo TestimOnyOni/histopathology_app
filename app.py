@@ -28,8 +28,11 @@ def _load_model_cached(model_path, thr_path, url=None):
         thr_path=thr_path,
         num_classes=2,
         map_location=_get_device(),
-        url=MODEL_URL  # 👈 provide fallback
+        url=url  # 👈 provide fallback
     )
+
+
+
 
 # Load model once at startup
 model, device, best_thr = _load_model_cached(MODEL_PATH, THR_PATH, url=MODEL_URL)
