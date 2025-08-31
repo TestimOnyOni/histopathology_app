@@ -2,7 +2,6 @@ import sys
 import os
 import streamlit as st
 import matplotlib.pyplot as plt
-from backend.model_loader import load_model_and_threshold, _get_device
 
 # -------------------------------------------------------------------
 # Bootstrap sys.path so "backend" is always importable
