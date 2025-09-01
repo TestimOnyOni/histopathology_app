@@ -4,7 +4,7 @@ import torch
 from backend.model_loader import load_model_and_threshold, get_device
 from backend.preprocessing import handle_uploaded_file
 from backend.inference import run_inference_on_patches
-from config import MODEL_PATH, THR_PATH, MODEL_URL
+from backend.config import MODEL_PATH, THR_PATH, MODEL_URL
 
 st.set_page_config(page_title="Histopathology App", layout="wide")
 
