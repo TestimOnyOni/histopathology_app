@@ -1,43 +1,26 @@
-# backend/inference.py
-from __future__ import annotations
-from typing import List, Tuple
 import torch
 
-def run_inference_on_patches(
-    model,
-    device: str,
-    patches: List[torch.Tensor],
-    threshold: float = 0.5,
-    batch_size: int = 32,
-) -> Tuple[int, float, list]:
+@torch.no_grad()
+def run_inference_on_patches(model, device, patches, threshold=0.5, batch_size=16):
     """
-    Inference over a list of CHW tensors.
-    Supports 1-logit (sigmoid) and 2-logit (softmax) heads.
-    Returns (slide_pred, agg_prob, patch_probs_list).
+    Runs inference on a list of image tensors (patches).
+    Returns:
+        slide_pred (int): 0 or 1 (negative/positive)
+        agg_prob (float): average probability across patches
+        patch_probs (list of float): individual patch probabilities
     """
-    if not patches:
-        return 0, 0.0, []
-
     model.eval()
+
     all_probs = []
+    for i in range(0, len(patches), batch_size):
+        batch = patches[i:i + batch_size]
+        x = torch.stack(batch).to(device)  # (B, C, H, W)
+        logits = model(x)
+        probs = torch.softmax(logits, dim=1)[:, 1]  # probability of class 1
+        all_probs.append(probs.cpu())
 
-    with torch.no_grad():
-        for i in range(0, len(patches), batch_size):
-            batch = torch.stack(patches[i : i + batch_size]).to(device)  # [B,3,H,W]
-            logits = model(batch)  # [B,1] or [B,2]
-
-            if logits.ndim != 2:
-                logits = logits.view(logits.size(0), -1)
-
-            if logits.shape[1] == 1:
-                probs = torch.sigmoid(logits).squeeze(1)        # [B]
-            else:
-                probs = torch.softmax(logits, dim=1)[:, 1]      # [B]
-
-            all_probs.append(probs.cpu())
-
-    all_probs = torch.cat(all_probs)  # [N]
-    agg_prob = float(all_probs.mean().item())
-    slide_pred = int(agg_prob >= float(threshold))
+    all_probs = torch.cat(all_probs)
+    agg_prob = all_probs.mean().item()
+    slide_pred = int(agg_prob >= threshold)
 
     return slide_pred, agg_prob, all_probs.tolist()

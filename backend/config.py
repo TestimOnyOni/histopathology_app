@@ -1,13 +1,11 @@
-from pathlib import Path
-import torch
+import os
 
-# Paths inside the container
-BASE_DIR = Path(__file__).resolve().parent.parent
-MODEL_PATH = BASE_DIR / "models" / "best_resnet50_balanced.pth"
-THR_PATH = BASE_DIR / "models" / "thr.json"
-DEFAULT_NUM_CLASSES = 2
+# Base directory (backend is sibling of models/)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-# Remote fallback (raw GitHub link!)
-MODEL_URL = "https://raw.githubusercontent.com/TestimOnyOni/histopathology_app/main/models/best_resnet50_balanced.pth"
-# https://github.com/TestimOnyOni/histoPathologySystem/blob/main/best_resnet50_balanced.pth
-# MODEL_URL = "https://raw.githubusercontent.com/TestimOnyOni/histoPathologySystem/blob/main/best_resnet50_balanced.pth"
+# Paths
+MODEL_PATH = os.path.join(BASE_DIR, "models", "best_resnet50_balanced.pth")
+THR_PATH   = os.path.join(BASE_DIR, "models", "thr.json")
+
+# Remote model (optional, used if MODEL_PATH missing)
+MODEL_URL = "https://github.com/TestimOnyOni/histopathology_app/raw/main/models/best_resnet50_balanced.pth"
