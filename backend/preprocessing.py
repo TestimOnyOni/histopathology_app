@@ -1,42 +1,61 @@
 import os
 import zipfile
-from io import BytesIO
+import tempfile
 from PIL import Image
 import torch
-import torchvision.transforms as T
+from torchvision import transforms
+import streamlit as st
 
-# ----------------- Image transform -----------------
-transform = T.Compose([
-    T.Resize((224, 224)),
-    T.ToTensor(),
-    T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+# --- Transform definition ---
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                         std=[0.229, 0.224, 0.225]),
 ])
 
-# ----------------- Safe extraction -----------------
-def safe_extract(zip_ref, path):
-    for member in zip_ref.namelist():
-        member_path = os.path.join(path, member)
-        if not os.path.abspath(member_path).startswith(os.path.abspath(path)):
-            raise Exception("Unsafe path in zip file!")
-    zip_ref.extractall(path)
+def load_image(img_file):
+    """Load a single image file as tensor."""
+    try:
+        image = Image.open(img_file).convert("RGB")
+        return transform(image)
+    except Exception as e:
+        st.error(f"❌ Error loading image {img_file}: {e}")
+        return None
 
-# ----------------- File handler -----------------
 def handle_uploaded_file(uploaded_file):
-    """Accepts either a single image or a ZIP of images. Returns list of Tensors."""
+    """
+    Handles uploaded file (single image or zip).
+    Returns: list of tensors
+    """
     patches = []
 
-    if uploaded_file.name.endswith(".zip"):
-        with zipfile.ZipFile(uploaded_file) as zip_ref:
-            temp_dir = "temp_uploads"
-            os.makedirs(temp_dir, exist_ok=True)
-            safe_extract(zip_ref, temp_dir)
+    if uploaded_file.name.lower().endswith(".zip"):
+        # --- Extract zip to a temp folder ---
+        tmpdir = tempfile.mkdtemp()
+        zip_path = os.path.join(tmpdir, uploaded_file.name)
+        with open(zip_path, "wb") as f:
+            f.write(uploaded_file.read())
 
-            for fname in os.listdir(temp_dir):
-                if fname.lower().endswith((".png", ".jpg", ".jpeg", ".tif")):
-                    img = Image.open(os.path.join(temp_dir, fname)).convert("RGB")
-                    patches.append(transform(img))
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
+            zip_ref.extractall(tmpdir)
+
+        # Walk through extracted files
+        for root, _, files in os.walk(tmpdir):
+            for fname in files:
+                if fname.lower().endswith((".png", ".jpg", ".jpeg")):
+                    fpath = os.path.join(root, fname)
+                    tensor = load_image(fpath)
+                    if tensor is not None:
+                        patches.append(tensor)
+
     else:
-        img = Image.open(uploaded_file).convert("RGB")
-        patches.append(transform(img))
+        # --- Single image case ---
+        tensor = load_image(uploaded_file)
+        if tensor is not None:
+            patches.append(tensor)
+
+    if not patches:
+        raise ValueError("No valid images found in upload.")
 
     return patches
