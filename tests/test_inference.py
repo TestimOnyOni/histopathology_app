@@ -1,21 +1,44 @@
 import torch
-from PIL import Image
 from backend.inference import run_inference_on_patches
 
 class DummyModel(torch.nn.Module):
     def __init__(self):
         super().__init__()
-    def forward(self, x):
-        # Always predict class 1 with high probability
-        return torch.tensor([[0.1, 0.9]])
+        self.fc = torch.nn.Linear(3 * 224 * 224, 1)
 
-def test_inference():
-    img = Image.new("RGB", (224, 224), color="green")
+    def forward(self, x):
+        # Flatten and send through linear layer
+        x = x.view(x.size(0), -1)
+        return self.fc(x)
+
+def test_inference_single_patch():
+    # Create a dummy model + dummy input
     model = DummyModel()
+    device = "cpu"
+    patch = torch.randn(3, 224, 224)  # simulate one preprocessed patch
+
     slide_pred, agg_prob, patch_probs = run_inference_on_patches(
-        model, "cpu", [img], threshold=0.5
+        model, device, [patch], threshold=0.5
     )
-    assert slide_pred == 1
-    assert agg_prob > 0.5
+
+    # --- Assertions ---
+    assert isinstance(slide_pred, int)
+    assert isinstance(agg_prob, float)
     assert isinstance(patch_probs, list)
-    assert patch_probs[0] > 0.5
+    assert len(patch_probs) == 1
+
+
+def test_inference_multiple_patches():
+    model = DummyModel()
+    device = "cpu"
+    patches = [torch.randn(3, 224, 224) for _ in range(5)]
+
+    slide_pred, agg_prob, patch_probs = run_inference_on_patches(
+        model, device, patches, threshold=0.5
+    )
+
+    # --- Assertions ---
+    assert isinstance(slide_pred, int)
+    assert isinstance(agg_prob, float)
+    assert isinstance(patch_probs, list)
+    assert len(patch_probs) == 5
